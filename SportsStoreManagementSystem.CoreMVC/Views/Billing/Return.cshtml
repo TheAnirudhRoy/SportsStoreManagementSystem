@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "Return Order";
+}
+
+<h2>Return Order</h2>
+
+<div class="mb-3">
+    <label for="orderIdInput" class="form-label">Order ID</label>
+    <input type="text" id="orderIdInput" class="form-control" placeholder="Enter Order ID">
+    <button id="fetchOrderItems" class="btn btn-primary mt-2">Fetch Order Items</button>
+</div>
+
+<div id="orderItemsSection" style="display:none;">
+    <h3>Order Items</h3>
+    <table class="table table-striped" id="orderItemsTable">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Qty to Return</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button id="returnItems" class="btn btn-success">Return Items</button>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#fetchOrderItems').click(function () {
+                var orderId = $('#orderIdInput').val();
+                $.getJSON('@Url.Action("GetOrderItems")', { orderId: orderId }, function (data) {
+                    if (data.success) {
+                        var tbody = $('#orderItemsTable tbody');
+                        tbody.empty();
+                        $.each(data.orderItems, function (index, item) {
+                            var row = '<tr data-sales-item-id="' + item.salesItemId + '" data-product-id="' + item.productId + '">' +
+                                '<td>' + item.product.productName + '</td>' +
+                                '<td>' + item.pricePerItem + '</td>' +
+                                '<td>' + item.qty + '</td>' +
+                                '<td><input type="number" class="form-control qty-to-return" min="0" max="' + item.qty + '" value="0"></td>' +
+                                '<td><button type="button" class="btn btn-warning btn-sm return-item">Return</button></td>' +
+                                '</tr>';
+                            tbody.append(row);
+                        });
+                        $('#orderItemsSection').show();
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            });
+
+            $(document).on('click', '.return-item', function () {
+                var row = $(this).closest('tr');
+                var qtyToReturn = row.find('.qty-to-return').val();
+                if (qtyToReturn > 0) {
+                    if (confirm('Are you sure you want to return ' + qtyToReturn + ' items?')) {
+                        var returnItem = {
+                            SalesItemId: row.data('sales-item-id'),
+                            ProductId: row.data('product-id'),
+                            QtyToReturn: qtyToReturn
+                        };
+
+                        $.ajax({
+                            url: '/Billing/ReturnItems',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify([returnItem]),
+                            success: function () {
+                                alert('Items returned successfully');
+                                $('#fetchOrderItems').click(); // Refresh the order items
+                            },
+                            error: function () {
+                                alert('Error processing returns');
+                            }
+                        });
+                    }
+                } else {
+                    alert('Please enter a valid quantity to return');
+                }
+            });
+
+            $('#returnItems').click(function () {
+                var returnItems = [];
+                $('#orderItemsTable tbody tr').each(function () {
+                    var row = $(this);
+                    var qtyToReturn = row.find('.qty-to-return').val();
+                    if (qtyToReturn > 0) {
+                        var returnItem = {
+                            SalesItemId: row.data('sales-item-id'),
+                            ProductId: row.data('product-id'),
+                            QtyToReturn: qtyToReturn
+                        };
+                        returnItems.push(returnItem);
+                    }
+                });
+
+                if (returnItems.length > 0) {
+                    if (confirm('Are you sure you want to return the selected items?')) {
+                        $.ajax({
+                            url: '/Billing/ReturnItems',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(returnItems),
+                            success: function () {
+                                alert('Items returned successfully');
+                                $('#fetchOrderItems').click(); // Refresh the order items
+                            },
+                            error: function () {
+                                alert('Error processing returns');
+                            }
+                        });
+                    }
+                } else {
+                    alert('Please enter a valid quantity to return');
+                }
+            });
+        });
+    </script>
+}

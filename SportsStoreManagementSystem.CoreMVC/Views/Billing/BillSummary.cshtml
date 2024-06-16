@@ -1,0 +1,31 @@
+﻿@model SportsStoreManagementSystem.CoreMVC.Models.BillSummaryViewModel
+
+@{
+    ViewData["Title"] = "Bill Summary";
+}
+
+<h2>Order Placed Successfully</h2>
+<p>Sales ID: @Model.SalesId</p>
+
+<h3>Bill Summary</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.SalesItems)
+        {
+            <tr>
+                <td>@item.Product.ProductName</td>
+                <td>@item.PricePerItem</td>
+                <td>@item.Qty</td>
+                <td>@(item.PricePerItem * item.Qty)</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,6 @@
+@SportsStoreManagementSystem.CoreWebAPI_HostAddress = http://localhost:5129
+
+GET {{SportsStoreManagementSystem.CoreWebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

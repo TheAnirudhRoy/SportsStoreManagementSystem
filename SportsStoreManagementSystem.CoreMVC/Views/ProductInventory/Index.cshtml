@@ -1,0 +1,49 @@
+﻿@model IEnumerable<SportsStoreManagementSystem.Entities.ProductInventory>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Product Inventory</h1>
+
+@* <p>
+    <a asp-action="Create">Create New</a>
+</p> *@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @* @Html.DisplayNameFor(model => model.SupId) *@
+                Supplier Name
+            </th>
+            <th>
+                @* @Html.DisplayNameFor(model => model.ProductId) *@
+                Product Name
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stocks)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sup.SubName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Stocks)
+            </td>
+            <td>
+                @Html.ActionLink("Return", "Edit", new { id = item.SupId, id2 = item.ProductId })
+                @* @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ }) *@
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

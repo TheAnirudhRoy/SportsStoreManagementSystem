@@ -1,0 +1,25 @@
+﻿@model IEnumerable<SportsStoreManagementSystem.Entities.SupplierDetail>
+
+<h1>Supplier Details</h1>
+<p>
+    <a href="@Url.Action("Create")">Create New</a>
+</p>
+<table class="table table-striped">
+    <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Contact</th>
+        <th>Actions</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.SubName</td>
+            <td>@item.SubAddress</td>
+            <td>@item.SubContact</td>
+            <td>
+                <a href="@Url.Action("Edit", new { id = item.SupId })">Edit</a>
+            </td>
+        </tr>
+    }
+</table>

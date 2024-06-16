@@ -1,0 +1,55 @@
+﻿@model SportsStoreManagementSystem.Entities.ProductInventory
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Return</h1>
+
+<h4>Product Inventory</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="SupId" />
+            <input type="hidden" asp-for="ProductId" />
+            <div class="form-group">
+                <label asp-for="Stocks" class="control-label"><b>Current Stocks:</b></label>
+                <input asp-for="Stocks" class="form-control" disabled />
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Stocks" class="control-label"><b>Enter the unit of Stocks Returned:</b></label>
+                <input asp-for="Stocks" class="form-control" id="stocks" required="required" type="number"/>
+                <span asp-validation-for="Stocks" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var max = $('#stocks').val();
+        $('#stocks').attr('min', 1);
+        $('#stocks').attr('max', max);
+
+        $('#stocks').on('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    });
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

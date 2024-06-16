@@ -1,0 +1,236 @@
+﻿@model SportsStoreManagementSystem.CoreMVC.Models.BillingViewModel
+
+@{
+    ViewData["Title"] = "Billing Page";
+}
+
+<h2 class="mt-4">Billing Page</h2>
+
+<div class="card mt-4">
+    <div class="card-header">
+        Customer Details
+    </div>
+    <div class="card-body">
+        <p><strong>Name:</strong> @Model.Customer.CustomerName</p>
+        <p><strong>Contact:</strong> @Model.Customer.CustomerContact</p>
+    </div>
+</div>
+
+<div class="mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="categorySelect" class="form-label">Select Category</label>
+                <select id="categorySelect" class="form-select">
+                    <option value="">-- Select Category --</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.CategoryId">@category.CategoryName</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="productSelect" class="form-label">Select Product</label>
+                <select id="productSelect" class="form-select" disabled>
+                    <option value="">-- Select Product --</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="text" id="price" class="form-control" readonly />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="qty" class="form-label">Quantity</label>
+                <input type="number" id="qty" class="form-control" value="1" min="1" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="supplierSelect" class="form-label">Select Supplier</label>
+                <select id="supplierSelect" class="form-select" disabled>
+                    <option value="">-- Select Supplier --</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <button style="margin-top: 32px" type="button" id="addProduct" class="btn btn-primary">Add Product</button>
+            <button style="margin-top: 32px" type="button" id="checkout" class="btn btn-success">Checkout</button>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h3>Selected Products</h3>
+    <table class="table table-striped" id="selectedProductsTable">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $('#categorySelect').change(function () {
+                var categoryId = $(this).val();
+                var productSelect = $('#productSelect');
+                productSelect.empty();
+                productSelect.append('<option value="">-- Select Product --</option>');
+                $('#price').val('');
+                if (categoryId) {
+                    $.getJSON('@Url.Action("GetProductsByCategory")', { categoryId: categoryId }, function (data) {
+                        if (!data.success) {
+                            productSelect.prop('disabled', true);
+                            var supplierSelect = $('#supplierSelect');
+                            supplierSelect.empty();
+                            supplierSelect.append('<option value="">-- Select Supplier --</option>');
+                            supplierSelect.prop('disabled', true);
+                        }
+                        else {
+                            productSelect.prop('disabled', false);
+                            $.each(data.products, function (index, item) {
+                                productSelect.append('<option value="' + item.productId + '" data-price="' + item.price + '">' + item.productName + '</option>');
+                            });
+                        }
+                    });
+                } else {
+                    productSelect.prop('disabled', true);
+                }
+            });
+
+            $('#productSelect').change(function () {
+                var selectedOption = $(this).find('option:selected');
+                var productId = $(this).val();
+                var price = selectedOption.data('price');
+                $('#price').val(price);
+
+                var supplierSelect = $('#supplierSelect');
+                supplierSelect.empty();
+                supplierSelect.append('<option value="">-- Select Supplier --</option>');
+                if (productId) {
+                    $.getJSON('@Url.Action("GetSuppliersByProductId")', { productId: productId }, function (data) {
+                        supplierSelect.prop('disabled', false);
+                        console.log(data);
+                        $.each(data, function (index, item) {
+                            supplierSelect.append('<option value="' + item.supId + '">' + item.subName + '</option>');
+                        });
+                    });
+                } else {
+                    supplierSelect.prop('disabled', true);
+                }
+            });
+
+            $('#supplierSelect').change(function () {
+                var supID = $(this).val();
+                var productID = $('#productSelect').find('option:selected').val();
+
+                $.getJSON('@Url.Action("GetProductStocks")', { productID: productID, supID: supID }, function (data) {
+                    console.log(data.stocks);
+                    $('#qty').attr('max', parseInt(data.stocks));
+                });
+            });
+
+            $('#addProduct').click(function () {
+                var productSelect = $('#productSelect');
+                var supplierSelect = $('#supplierSelect');
+                var selectedOption = productSelect.find('option:selected');
+                var productName = selectedOption.text();
+                var productId = selectedOption.val();
+                var supplierId = supplierSelect.find('option:selected').val();
+                var categoryId = $('#categorySelect').find('option:selected').val();
+                var price = $('#price').val();
+                var qty = $('#qty').val();
+                var total = price * qty;
+
+                var checkExist = false;
+                var rows = $('#selectedProductsTable tbody tr').each(function () {
+                    if ($(this).data('product-id') == productId) {
+                        checkExist = true;
+                        return;
+                    }
+                });
+
+                var max = $("#qty").attr('max');
+                var value = $("#qty").val();
+
+                console.log(max + " " + value);
+
+                if (!categoryId) {
+                    alert("Please select a Category.");
+                }
+
+                else if (!productId) {
+                    alert("Please select a Product.");
+                }
+
+                else if (!supplierId) {
+                    alert("Please select a Supplier.");
+                }
+                else if (checkExist) {
+                    alert("Product is already in Bill.");
+                }
+                else if (parseInt(value) > parseInt(max)) {
+                    alert("Only " + parseInt(max) + " Items Available in Inventory");
+                }
+                else if (productId && qty > 0) {
+                    var newRow = '<tr data-product-id="' + productId + '" data-supplier-id="' + supplierId + '"><td>' + productName + '</td><td>' + price + '</td><td>' + qty + '</td><td>' + total + '</td><td><button type="button" class="btn btn-danger btn-sm remove-product">Remove</button></td></tr>';
+                    $('#selectedProductsTable tbody').append(newRow);
+                }
+
+                // Add remove product functionality
+                $('.remove-product').off('click').on('click', function () {
+                    $(this).closest('tr').remove();
+                });
+            });
+
+            $('#checkout').click(function () {
+                var customerId = '@Model.Customer.CustomerId';
+                var items = [];
+                $('#selectedProductsTable tbody tr').each(function () {
+                    var row = $(this);
+                    var item = {
+                        supId: row.data('supplier-id'),
+                        CustomerId: customerId,
+                        ProductId: row.data('product-id'),
+                        Qty: row.find('td:nth-child(3)').text(),
+                        PricePerItem: row.find('td:nth-child(2)').text()
+                    };
+                    items.push(item);
+                });
+
+                $.ajax({
+                    url: '/Billing/Checkout',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(items),
+                    success: function (response) {
+                        window.location.href = '/Billing/BillSummary/' + response;
+                    },
+                    error: function (error) {
+                        alert('Error: ' + error.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}

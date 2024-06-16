@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SportsStoreManagementSystem.CoreMVC</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SportsStoreManagementSystem.CoreMVC.styles.css" asp-append-version="true" />
+    <style>
+        body {
+            padding-top: 69px;
+        }
+
+            body::-webkit-scrollbar {
+                display: none;
+            }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 1% 3%;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 0 10px 0 #0000004d;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-family: Roboto, Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            font-size: 1.2rem;
+            margin-left: 1.5rem;
+            cursor: pointer;
+        }
+
+            .nav-link:hover {
+                text-decoration: underline;
+            }
+
+        .nav-items {
+            display: flex;
+            align-items: center;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1001;
+            top: 0;
+            left: 0;
+            overflow-x: hidden;
+            transition: 0.5s;
+            position: fixed;
+            background-color: #ffffff;
+            overflow-x: hidden;
+            padding-top: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+            .sidenav a {
+                padding: 8px 8px 8px 32px;
+                text-decoration: none;
+                font-size: 18px;
+                color: #333333;
+                display: block;
+                white-space: nowrap;
+            }
+
+        .openbtn {
+            font-size: 30px;
+            cursor: pointer;
+            color: #333333;
+            padding: 20px;
+            border: none;
+        }
+
+        .sidenav .closebtn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .sidenav-items {
+            margin-top: 60px;
+        }
+
+        .signin-container {
+            width: 300px;
+            background-color: #fff;
+            padding: 2rem;
+            padding-top: 1rem;
+            margin: 0 auto;
+            box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .2);
+        }
+
+        .form-group h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-group input {
+                border: 1px solid;
+                border-radius: 0;
+                width: 100%;
+            }
+
+        .signin-container button,
+        .signup-container button {
+            border-radius: 0;
+            margin-top: 0.5rem;
+            padding: 0.4rem 1rem;
+        }
+
+        .navbar-nav {
+            flex-direction: row;
+        }
+
+        .navbar-light .navbar-nav .nav-link:first-child {
+            color: rgba(0, 0, 0, .55);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <span class="openbtn" onclick="openSideNav()">&#9776;</span>
+            }
+            @Html.ActionLink("Sports Store Management System", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+        </div>
+        @* <ul class="nav-items" id="navitems">
+            <li class="nav-item">
+                @Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })
+            </li>
+            <li class="nav-item">
+                @Html.ActionLink("Admin", "Index", "Home", new { area = "" }, new { @class = "nav-link" })
+            </li>
+            <li class="nav-item">
+                @Html.ActionLink("Logout", "Index", "Home", new { area = "" }, new { @class = "nav-link" })
+            </li>
+        </ul> *@
+        <partial name="_LoginPartial" />
+    </nav>
+    <div class="sidenav-overlay"></div>
+    <nav id="sideNav" class="sidenav">
+        @if (User.Identity.IsAuthenticated)
+        {
+            if (User.IsInRole("Admin"))
+            {
+                <a class="closebtn" style="padding: 5px;" onclick="closeSideNav();">&times;</a>
+                <div class="sidenav-items">
+                    @Html.ActionLink("Supplier", "Index", "SupplierDetails", new { area = "" }, new { @class = "nav-link" })
+                    @Html.ActionLink("Category", "Index", "ProductCategory", new { area = "" }, new { @class = "nav-link" })
+                    @Html.ActionLink("Products", "Index", "Products", new { area = "" }, new { @class = "nav-link" })
+                    @Html.ActionLink("Procure", "Index", "ProcurementDetails", new { area = "" }, new { @class = "nav-link" })
+                    @Html.ActionLink("Inventory", "Index", "ProductInventory", new { area = "" }, new { @class = "nav-link" })
+                </div>
+            }
+            if (User.IsInRole("Clerk"))
+            {
+                <a class="closebtn" style="padding: 5px;" onclick="closeSideNav();">&times;</a>
+                <div class="sidenav-items">
+                    @Html.ActionLink("Purchase", "Search", "Billing", new { area = "" }, new { @class = "nav-link" })
+                    @Html.ActionLink("Return", "Return", "Billing", new { area = "" }, new { @class = "nav-link" })
+                </div>
+            }
+        }
+    </nav>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - Sports Store Management System - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script>
+        function openSideNav() {
+            var sideNav = document.getElementById("sideNav");
+            sideNav.style.width = "250px";
+            var sideNavOverlay = document.querySelectorAll("sidenav-overlay")[0];
+            sideNavOverlay.style.width = "100%";
+        }
+
+        function closeSideNav() {
+            var sideNav = document.getElementById("sideNav");
+            sideNav.style.width = "0";
+            var sideNavOverlay = document.querySelectorAll("sidenav-overlay")[0];
+            sideNavOverlay.style.width = "0px";
+        }
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

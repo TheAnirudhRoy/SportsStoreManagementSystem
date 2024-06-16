@@ -1,0 +1,65 @@
+﻿@model SportsStoreManagementSystem.Entities.ProcurementDetail
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Procurement Detail</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="SupId" class="control-label"><b>Select Supplier</b></label>
+                <select asp-for="SupId" class ="form-control" asp-items="ViewBag.SupId" required="required"></select>
+                @* <input asp-for="SupId" class="form-control" required="required" type="number"/> *@
+                <span asp-validation-for="SupId" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="ProductId" class="control-label"><b>Select Product</b></label>
+                <select asp-for="ProductId" class="form-control" asp-items="ViewBag.ProductId" required="required"></select>
+                @* <input asp-for="ProductId" class="form-control" required="required" type="number"/> *@
+                <span asp-validation-for="ProductId" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Qty" class="control-label"><b>Quantity</b></label>
+                <input asp-for="Qty" class="form-control" required="required" id="qty" />
+                <span asp-validation-for="Qty" class="text-danger"></span>
+            </div>
+@*             <div class="form-group">
+                <label asp-for="TotalPrice" class="control-label"></label>
+                <input asp-for="TotalPrice" class="form-control" />
+                <span asp-validation-for="TotalPrice" class="text-danger"></span>
+            </div> *@
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#qty').attr('min', 0);
+
+        $('#qty').on('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    });    
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
