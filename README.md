@@ -1,4 +1,4 @@
-# Sports Store Management System
+# Sports Store Management System ASP.NET Core MVC + ASP.NET Core Web API
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
