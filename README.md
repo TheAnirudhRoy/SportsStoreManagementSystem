@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Project Overview New 
+## Project Overview
 
 The Sports Store Management System is a comprehensive web application designed to manage the operations of a sports store efficiently. The project leverages the ASP.NET Core MVC framework with C# as the programming language, ensuring a robust and scalable architecture. The backend is powered by a Core Web API, and the entire application follows a layered architecture, separating concerns into the Presentation Layer, Business Layer, and Data Access Layer.
 
